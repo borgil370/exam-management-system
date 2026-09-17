@@ -1,0 +1,23 @@
+# 本地开发数据库：云端 Supabase 每个查询有 ~270ms RTT,本地开发用这个容器(RT <1ms)。
+# 用法: docker compose up -d   首次启动后执行 pnpm db:migrate && pnpm db:seed
+# 连接串见 .env 中的 LOCAL 配置;切回云端时注释 LOCAL、取消注释 SUPABASE 两行即可。
+services:
+  db:
+    image: postgres:17
+    container_name: exam-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: exam
+    ports:
+      - "5432:5432"
+    volumes:
+      - exam-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d exam"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  exam-pgdata:
